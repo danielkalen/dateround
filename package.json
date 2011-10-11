@@ -1,0 +1,16 @@
+{
+  "name": "roundate",
+  "description": "Roundate provides rounding functions for JavaScript Date objects.",
+  "author": "John Nishinaga <jingoro@casa-z.org> (http://ejinjue.org/)",
+  "contributors": [],
+  "dependencies": {},
+  "devDependencies": {
+    "docco": "",
+    "coffee-script": "",
+    "jasmine-node": ""
+  },
+  "version": "0.0.1",
+  "engines": {
+    "node": "*"
+  }
+}
