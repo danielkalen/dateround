@@ -1,34 +1,43 @@
 # **Roundate** provides rounding functions for JavaScript `Date` objects.
 #
-# Units
+# Notes
 # -----
 #
-# `Roundate` methods accept the following strings for the `unit` parameter:
+# ### Units
 #
-# * `millisecond`
-# * `second`
-# * `minute`
-# * `hour`
-# * `day`
-# * `week`
-# * `month`
-# * `year`
+# The following strings can be used for the `unit` parameter:
 #
-# Week Calculations
-# -----------------
+# * millisecond | milliseconds
+# * second | seconds
+# * minute | minutes
+# * hour | hours
+# * day | days
+# * week | weeks
+# * month | months
+# * year | years
 #
-# **Note - Monday is assumed to be the first day of the week.**
+# ### Week Calculations
+#
+# _Monday is assumed to be the first day of the week._
 
 # Setup
 # -----
+
+# Create the global object.
 Roundate = {}
 
-# If CommonJS module, export Roundate.
-if module? && module.exports
-  module.exports = Roundate
-# Otherwise attach Roundate to `this` (`window`).
-else
-  this['Roundate'] = Roundate
+# Add a method to singularize plural units.
+singularize = (str) ->
+  str.replace /s$/, ''
+
+# Create an exception object for invalid units.
+class UnitError extends Error
+  constructor: (unit) ->
+    @name    = "Roundate.UnitError"
+    @message = "Unknown unit #{unit}"
+    @stack   = (new Error()).stack
+
+Roundate.UnitError = UnitError
 
 # Roundate.add
 # ------------
@@ -36,7 +45,7 @@ else
 # Add `value` `unit`s to `date`.
 Roundate.add = (date, value, unit) ->
   date = new Date(date)
-  switch unit
+  switch singularize(unit)
     when 'millisecond' then date.setUTCMilliseconds(date.getUTCMilliseconds() + value)
     when 'second'      then date.setUTCSeconds(     date.getUTCSeconds()      + value)
     when 'minute'      then date.setUTCMinutes(     date.getUTCMinutes()      + value)
@@ -45,7 +54,7 @@ Roundate.add = (date, value, unit) ->
     when 'week'        then date.setUTCDate(        date.getUTCDate()         + (value*7))
     when 'month'       then date.setUTCMonth(       date.getUTCMonth()        + value)
     when 'year'        then date.setUTCFullYear(    date.getUTCFullYear()     + value)
-    else throw "Invalid unit #{unit}"
+    else throw new UnitError(unit)
   date
 
 # Roundate.subtract
@@ -61,23 +70,24 @@ Roundate.subtract = (date, value, unit) ->
 # Returns the floor of `date` for the given time `unit`.
 Roundate.floor = (date, unit) ->
   date = new Date(date)
-  return date if unit == 'millisecond'
-  date.setUTCMilliseconds(0)
-  if unit != 'second'
-    date.setUTCSeconds(0)
-    if unit != 'minute'
-      date.setUTCMinutes(0)
-      if unit != 'hour'
-        date.setUTCHours(0)
-        if unit == 'week'
-          dow = (date.getUTCDay() + 6) % 7
-          date.setUTCDate(date.getUTCDate() - dow)
-        else if unit != 'day'
-          date.setUTCDate(1)
-          if unit == 'year'
-            date.setUTCMonth(0)
-          else if unit != 'month'
-            throw "Invalid unit #{unit}"
+  snit = singularize unit
+  if snit != 'millisecond'
+    date.setUTCMilliseconds(0)
+    if snit != 'second'
+      date.setUTCSeconds(0)
+      if snit != 'minute'
+        date.setUTCMinutes(0)
+        if snit != 'hour'
+          date.setUTCHours(0)
+          if snit == 'week'
+            dow = (date.getUTCDay() + 6) % 7
+            date.setUTCDate(date.getUTCDate() - dow)
+          else if snit != 'day'
+            date.setUTCDate(1)
+            if snit == 'year'
+              date.setUTCMonth(0)
+            else if snit != 'month'
+              throw new UnitError(unit)
   date
 
 # Roundate.ceiling
@@ -118,3 +128,26 @@ Roundate.round = (date, unit) ->
   # Otherwise, return the `ceiling`.
   else
     ceiling
+
+# Time Methods
+# ------------
+
+# Create a time method generator that returns the UNIX time
+# instead of a `Date` object for a given function `f`.
+timeMethod = (f) ->
+  () -> f.apply(this, arguments).getTime()
+
+# For each method in `Roundate`, create a *Time method equivalent.
+for name, method of Roundate
+  Roundate["#{name}Time"] = timeMethod(method)
+
+# Exports
+# -------
+
+# If this is a CommonJS module, export `Roundate`.
+if module? && module.exports
+  module.exports = Roundate
+
+# Otherwise attach `Roundate` to `window`.
+else
+  this['Roundate'] = Roundate

@@ -6,6 +6,8 @@ Roundate
 Example
 -------
 
+    Roundate = require('roundate');
+    
     var date    = new Date('Sat, 05 Mar 2011 12:13:23 GMT'),
         rounded = Roundate.round(date, 'day');
     
