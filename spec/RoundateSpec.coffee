@@ -1,4 +1,4 @@
-Roundate = require "#{__dirname}/../lib/roundate.js"
+Roundate = require "#{__dirname}/../src/roundate"
 
 describe 'Roundate', ->
 

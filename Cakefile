@@ -1,14 +1,8 @@
 # Based on https://github.com/twilson63/cakefile-template
 
-fs            = require 'fs'
-{print}       = require 'sys'
-{spawn, exec} = require 'child_process'
-
-# ANSI Terminal Colors
-bold = '\033[0;1m'
-green = '\033[0;32m'
-reset = '\033[0m'
-red = '\033[0;31m'
+fs      = require 'fs'
+{print} = require 'sys'
+{exec}  = require 'child_process'
 
 guessPath = (exec, module) ->
   module ||= exec
@@ -19,42 +13,50 @@ guessPath = (exec, module) ->
   catch error
     exec
 
-coffeePath  = guessPath 'coffee', 'coffee-script'
-jasminePath = guessPath 'jasmine-node'
-doccoPath   = guessPath 'docco'
+coffeePath   = guessPath 'coffee', 'coffee-script'
+jasminePath  = guessPath 'jasmine-node'
+doccoPath    = guessPath 'docco'
+uglifyjsPath = guessPath 'uglifyjs', 'uglify-js'
 
-log = (message, color, explanation) ->
-  console.log color + message + reset + ' ' + (explanation or '')
+run = (cmd, rest...) ->
+  if cmd
+    if cmd.apply
+      cmd()
+    else
+      exec cmd, (error, stdout, stderr) ->
+        print stdout if stdout
+        print stderr if stderr
+        if error
+          print "Error running: #{cmd}\n"
+        else
+          run.apply @, rest
 
-build = (watch, callback) ->
-  if typeof watch is 'function'
-    callback = watch
-    watch = false
-  options = ['-c', '-o', 'lib', 'src']
-  options.unshift '-w' if watch
-
-  coffee = spawn coffeePath, options
-  coffee.stdout.on 'data', (data) -> print data.toString()
-  coffee.stderr.on 'data', (data) -> log data.toString(), red
-  coffee.on 'exit', (status) -> callback?() if status is 0
+build = (callback) ->
+  run "#{coffeePath} -c -o lib src",
+      "#{uglifyjsPath} -o lib/roundate.min.js lib/roundate.js",
+      callback
 
 spec = (callback) ->
-  options = ['spec', '--coffee', '--verbose']
-  spec = spawn jasminePath, options
-  spec.stdout.on 'data', (data) -> print data.toString()
-  spec.stderr.on 'data', (data) -> log data.toString(), red
-  spec.on 'exit', (status) -> callback?() if status is 0
+  run "#{jasminePath} spec --coffee --verbose", callback
+
+docs = (callback) ->
+  run "#{doccoPath} src/roundate.coffee", callback
+
+buildPages = (callback) ->
+  run '[ -d pages ] || git clone -b gh-pages . pages',
+      'touch pages/foo'
+      'cp lib/*.js *.css pages',
+      'cp docs/roundate.html pages/index.html',
+      callback
 
 task 'docs', 'Generate annotated source code with Docco (requires pygmentize)', ->
-  fs.readdir 'src', (err, contents) ->
-    files = ("src/#{file}" for file in contents when /\.coffee$/.test file)
-    docco = spawn doccoPath, files
-    docco.stdout.on 'data', (data) -> print data.toString()
-    docco.stderr.on 'data', (data) -> log data.toString(), red
-    # docco.on 'exit', (status) -> callback?() if status is 0
+  docs()
 
 task 'build', 'Compile CoffeeScript to JavaScript', ->
   build()
 
 task 'spec', 'Run Specs with Jasmine-Node', ->
-  build -> spec()
+  spec()
+
+task 'pages', 'Build github pages', ->
+  build -> docs -> buildPages()

@@ -8,7 +8,8 @@
   "devDependencies": {
     "docco": "",
     "coffee-script": "",
-    "jasmine-node": ""
+    "jasmine-node": "",
+    "uglify-js": ""
   },
   "main": "lib/roundate.js",
   "version": "0.0.1",

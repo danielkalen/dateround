@@ -2,3 +2,4 @@ docs/*.css
 docs/*.html
 node_modules
 lib/*.js
+pages
