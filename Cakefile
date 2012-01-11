@@ -27,7 +27,8 @@ run = (cmd, rest...) ->
         print stdout if stdout
         print stderr if stderr
         if error
-          print "Error running: #{cmd}\n"
+          print "Error (#{error.code}) running: #{cmd}\n"
+          process.exit error.code
         else
           run.apply @, rest
 
@@ -37,7 +38,12 @@ build = (callback) ->
       callback
 
 spec = (callback) ->
-  run "#{jasminePath} spec --coffee --verbose", callback
+  # manually handle this because jasmine-node does not return an error on test failure
+  exec "#{jasminePath} spec --coffee --verbose", (error, stdout, stderr) ->
+    print stdout
+    m = stdout.match /\d+ tests, \d+ assertions, (\d+) failure/
+    if !m || parseInt(m[1]) > 0
+      process.exit(1)
 
 docs = (callback) ->
   run "#{doccoPath} src/roundate.coffee", callback
