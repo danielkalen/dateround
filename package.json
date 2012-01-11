@@ -3,6 +3,7 @@
   "description": "Rounding functions for Date objects.",
   "author": "John Nishinaga <jingoro@casa-z.org> (http://ejinjue.org/)",
   "keywords": ["date", "time", "round", "floor", "ceiling"],
+  "homepage": "https://github.com/patdeegan/roundate",
   "contributors": [],
   "dependencies": {},
   "devDependencies": {
