@@ -13,7 +13,9 @@ Example
     
     console.log( rounded.toUTCString() ); // "Sun, 06 Mar 2011 00:00:00 GMT"
 
-Documentation
--------------
+Downloads and Documentation
+---------------------------
 
-See the source.
+- [roundate.js](http://patdeegan.github.com/roundate/roundate.js)
+- [roundate.min.js](http://patdeegan.github.com/roundate/roundate.min.js)
+- [Documentation](http://patdeegan.github.com/roundate/)

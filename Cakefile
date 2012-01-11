@@ -43,10 +43,10 @@ docs = (callback) ->
   run "#{doccoPath} src/roundate.coffee", callback
 
 buildPages = (callback) ->
-  run '[ -d pages ] || git clone -b gh-pages . pages',
-      'touch pages/foo'
-      'cp lib/*.js *.css pages',
+  run '[ -d pages ] || git clone -b gh-pages git@github.com:patdeegan/roundate.git pages',
+      'cp lib/*.js docs/*.css pages',
       'cp docs/roundate.html pages/index.html',
+      'cd pages && git add . && git add -u && git commit -m "update pages" && git push'
       callback
 
 task 'docs', 'Generate annotated source code with Docco (requires pygmentize)', ->
