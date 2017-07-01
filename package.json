@@ -3,6 +3,12 @@
   "description": "Rounding functions for Date objects",
   "author": "John Nishinaga <jingoro@casa-z.org> (http://ejinjue.org/)",
   "main": "index.js",
+  "browser": {
+    "./index.js": "lib/index.coffee"
+  },
+  "browserify": {
+    "transform": "coffeeify"
+  },
   "version": "1.0.1",
   "keywords": [
     "date",
@@ -22,6 +28,7 @@
   },
   "devDependencies": {
     "chai": "^4.0.2",
+    "coffeeify": "^2.1.0",
     "coffee-script": "",
     "docco": "^0.7.0",
     "mocha": "^3.4.2",
