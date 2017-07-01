@@ -1,4 +1,4 @@
-# **Roundate** provides rounding functions for JavaScript `Date` objects.
+# **DateRound** provides rounding functions for JavaScript `Date` objects.
 #
 # Notes
 # -----
@@ -24,7 +24,7 @@
 # -----
 
 # Create the global object.
-Roundate = {}
+DateRound = {}
 
 # Add a method to singularize plural units.
 singularize = (str) ->
@@ -33,17 +33,17 @@ singularize = (str) ->
 # Create an exception object for invalid units.
 class UnitError extends Error
   constructor: (unit) ->
-    @name    = "Roundate.UnitError"
+    @name    = "DateRound.UnitError"
     @message = "Unknown unit #{unit}"
     @stack   = (new Error()).stack
 
-Roundate.UnitError = UnitError
+DateRound.UnitError = UnitError
 
-# Roundate.add
+# DateRound.add
 # ------------
 #
 # Add `value` `unit`s to `date`.
-Roundate.add = (date, value, unit) ->
+DateRound.add = (date, value, unit) ->
   date = new Date(date)
   switch singularize(unit)
     when 'millisecond' then date.setUTCMilliseconds(date.getUTCMilliseconds() + value)
@@ -57,18 +57,18 @@ Roundate.add = (date, value, unit) ->
     else throw new UnitError(unit)
   date
 
-# Roundate.subtract
+# DateRound.subtract
 # -----------------
 #
 # Subtract `value` `unit`s from `date`.
-Roundate.subtract = (date, value, unit) ->
-  Roundate.add(date, value * -1, unit)
+DateRound.subtract = (date, value, unit) ->
+  DateRound.add(date, value * -1, unit)
 
-# Roundate.floor
+# DateRound.floor
 # --------------
 #
 # Returns the floor of `date` for the given time `unit`.
-Roundate.floor = (date, unit) ->
+DateRound.floor = (date, unit) ->
   date = new Date(date)
   snit = singularize unit
   if snit != 'millisecond'
@@ -90,15 +90,15 @@ Roundate.floor = (date, unit) ->
               throw new UnitError(unit)
   date
 
-# Roundate.ceiling
+# DateRound.ceiling
 # ----------------
 #
 # Returns the ceiling of `date` for the given time `unit`.
-Roundate.ceiling = (date, unit) ->
+DateRound.ceiling = (date, unit) ->
 
   # Calculate the `floor` of `date`.
   date = new Date(date)
-  floor = Roundate.floor(date, unit)
+  floor = DateRound.floor(date, unit)
 
   # If the `floor` is equivalent to the `date`, return the `date`.
   if date.getTime() == floor.getTime()
@@ -106,18 +106,18 @@ Roundate.ceiling = (date, unit) ->
 
   # Otherwise, add 1 `unit` and return that.
   else
-    Roundate.add(floor, 1, unit)
+    DateRound.add(floor, 1, unit)
 
-# Roundate.round
+# DateRound.round
 # --------------
 #
 # Returns `date` rounded for the given time `unit`.
-Roundate.round = (date, unit) ->
+DateRound.round = (date, unit) ->
 
   # Calculate `ceiling`, `floor`, and the distance between them and `date`.
   date        = new Date(date)
-  ceiling     = Roundate.ceiling(date, unit)
-  floor       = Roundate.floor(date, unit)
+  ceiling     = DateRound.ceiling(date, unit)
+  floor       = DateRound.floor(date, unit)
   ceilingDiff = ceiling.getTime() - date.getTime()
   floorDiff   = date.getTime() - floor.getTime()
   
@@ -137,17 +137,11 @@ Roundate.round = (date, unit) ->
 timeMethod = (f) ->
   () -> f.apply(this, arguments).getTime()
 
-# For each method in `Roundate`, create a *Time method equivalent.
-for name, method of Roundate
-  Roundate["#{name}Time"] = timeMethod(method)
+# For each method in `DateRound`, create a *Time method equivalent.
+for name, method of DateRound
+  DateRound["#{name}Time"] = timeMethod(method)
 
 # Exports
 # -------
 
-# If this is a CommonJS module, export `Roundate`.
-if module? && module.exports
-  module.exports = Roundate
-
-# Otherwise attach `Roundate` to `window`.
-else
-  this['Roundate'] = Roundate
+module.exports = DateRound

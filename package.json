@@ -1,21 +1,36 @@
 {
-  "name": "roundate",
-  "description": "Rounding functions for Date objects.",
+  "name": "dateround",
+  "description": "Rounding functions for Date objects",
   "author": "John Nishinaga <jingoro@casa-z.org> (http://ejinjue.org/)",
-  "keywords": ["date", "time", "round", "floor", "ceiling"],
-  "homepage": "https://github.com/patdeegan/roundate",
+  "keywords": [
+    "date",
+    "time",
+    "round",
+    "floor",
+    "ceiling"
+  ],
+  "homepage": "https://github.com/danielkalen/dateround",
   "contributors": [],
-  "dependencies": {},
-  "devDependencies": {
-    "docco": "",
-    "coffee-script": "",
-    "jasmine-node": "",
-    "uglify-js": ""
+  "dependencies": {
+    "coffee-register": "^0.1.0"
   },
-  "main": "lib/roundate.js",
-  "version": "0.0.2",
+  "devDependencies": {
+    "chai": "^4.0.2",
+    "coffee-script": "",
+    "docco": "^0.7.0",
+    "mocha": "^3.4.2",
+    "uglify-js": "",
+    "uglifyjs": "^2.4.11"
+  },
+  "main": "index.js",
+  "version": "1.0.0",
   "engines": {
     "node": "*"
   },
-  "scripts" : { "test" : "cake spec" }
+  "scripts": {
+    "test": "mocha --compilers coffee:coffee-register test/test.coffee",
+    "pages": "cake pages",
+    "build": "cake build",
+    "docs": "cake docs"
+  }
 }
