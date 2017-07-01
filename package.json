@@ -2,6 +2,8 @@
   "name": "dateround",
   "description": "Rounding functions for Date objects",
   "author": "John Nishinaga <jingoro@casa-z.org> (http://ejinjue.org/)",
+  "main": "index.js",
+  "version": "1.0.0",
   "keywords": [
     "date",
     "time",
@@ -10,6 +12,10 @@
     "ceiling"
   ],
   "homepage": "https://github.com/danielkalen/dateround",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danielkalen/dateround"
+  },
   "contributors": [],
   "dependencies": {
     "coffee-register": "^0.1.0"
@@ -21,8 +27,6 @@
     "mocha": "^3.4.2",
     "uglify-js": "^3.0.22"
   },
-  "main": "index.js",
-  "version": "1.0.0",
   "engines": {
     "node": "*"
   },
