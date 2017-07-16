@@ -92,7 +92,7 @@
     return date;
   };
 
-  DateRound.ceiling = function(date, unit) {
+  DateRound.ceil = function(date, unit) {
     var floor;
     date = new Date(date);
     floor = DateRound.floor(date, unit);
@@ -104,16 +104,16 @@
   };
 
   DateRound.round = function(date, unit) {
-    var ceiling, ceilingDiff, floor, floorDiff;
+    var ceil, ceilDiff, floor, floorDiff;
     date = new Date(date);
-    ceiling = DateRound.ceiling(date, unit);
+    ceil = DateRound.ceil(date, unit);
     floor = DateRound.floor(date, unit);
-    ceilingDiff = ceiling.getTime() - date.getTime();
+    ceilDiff = ceil.getTime() - date.getTime();
     floorDiff = date.getTime() - floor.getTime();
-    if (ceilingDiff > floorDiff) {
+    if (ceilDiff > floorDiff) {
       return floor;
     } else {
-      return ceiling;
+      return ceil;
     }
   };
 

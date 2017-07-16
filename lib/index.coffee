@@ -1,147 +1,76 @@
-# **DateRound** provides rounding functions for JavaScript `Date` objects.
-#
-# Notes
-# -----
-#
-# ### Units
-#
-# The following strings can be used for the `unit` parameter:
-#
-# * millisecond | milliseconds
-# * second | seconds
-# * minute | minutes
-# * hour | hours
-# * day | days
-# * week | weeks
-# * month | months
-# * year | years
-#
-# ### Week Calculations
-#
-# _Monday is assumed to be the first day of the week._
+KEYS = ['Month', 'Date', 'Hours', 'Minutes', 'Seconds', 'Milliseconds']
+MAX = [12, 31, 24, 60, 60, 1000]
 
-# Setup
-# -----
+calc = (date, target, precision=1, direction)->
+	date = normalizeDate(date)
+	target = target.toLowerCase()
+	target = 'Date' if target.indexOf('day') isnt -1
+	target = target[0].toUpperCase() + target.slice(1)
+	target += 's' unless target[target.length-1] is 's' or target is 'Month' or target is 'Day' or target is 'Date'
 
-# Create the global object.
-DateRound = {}
+	value = 0
+	rounded = false
+	subRatio = 1
+	maxValue = undefined
 
-# Add a method to singularize plural units.
-singularize = (str) ->
-  str.replace /s$/, ''
+	for key,index in KEYS
+		if key is target
+			value = date["get#{key}"]()
+			maxValue = rounded = MAX[index]
+			rounded = true
 
-# Create an exception object for invalid units.
-class UnitError extends Error
-  constructor: (unit) ->
-    @name    = "DateRound.UnitError"
-    @message = "Unknown unit #{unit}"
-    @stack   = (new Error()).stack
+		else if rounded
+			subRatio *= MAX[index]
+			value += date["get#{key}"]() / subRatio
+			date["set#{key}"](0)
 
-DateRound.UnitError = UnitError
 
-# DateRound.add
-# ------------
-#
-# Add `value` `unit`s to `date`.
-DateRound.add = (date, value, unit) ->
-  date = new Date(date)
-  switch singularize(unit)
-    when 'millisecond' then date.setUTCMilliseconds(date.getUTCMilliseconds() + value)
-    when 'second'      then date.setUTCSeconds(     date.getUTCSeconds()      + value)
-    when 'minute'      then date.setUTCMinutes(     date.getUTCMinutes()      + value)
-    when 'hour'        then date.setUTCHours(       date.getUTCHours()        + value)
-    when 'day'         then date.setUTCDate(        date.getUTCDate()         + value)
-    when 'week'        then date.setUTCDate(        date.getUTCDate()         + (value*7))
-    when 'month'       then date.setUTCMonth(       date.getUTCMonth()        + value)
-    when 'year'        then date.setUTCFullYear(    date.getUTCFullYear()     + value)
-    else throw new UnitError(unit)
-  date
+	value = Math[direction](value / precision) * precision
+	value = Math.min(value, maxValue)
+	date["set#{target}"](value)
+	return date
 
-# DateRound.subtract
-# -----------------
-#
-# Subtract `value` `unit`s from `date`.
-DateRound.subtract = (date, value, unit) ->
-  DateRound.add(date, value * -1, unit)
 
-# DateRound.floor
-# --------------
-#
-# Returns the floor of `date` for the given time `unit`.
-DateRound.floor = (date, unit) ->
-  date = new Date(date)
-  snit = singularize unit
-  if snit != 'millisecond'
-    date.setUTCMilliseconds(0)
-    if snit != 'second'
-      date.setUTCSeconds(0)
-      if snit != 'minute'
-        date.setUTCMinutes(0)
-        if snit != 'hour'
-          date.setUTCHours(0)
-          if snit == 'week'
-            dow = (date.getUTCDay() + 6) % 7
-            date.setUTCDate(date.getUTCDate() - dow)
-          else if snit != 'day'
-            date.setUTCDate(1)
-            if snit == 'year'
-              date.setUTCMonth(0)
-            else if snit != 'month'
-              throw new UnitError(unit)
-  date
+normalizeDate = (target)->
+	if target instanceof Date
+		return target
 
-# DateRound.ceiling
-# ----------------
-#
-# Returns the ceiling of `date` for the given time `unit`.
-DateRound.ceiling = (date, unit) ->
+	if typeof target is 'number' or typeof target is 'string'
+		return new Date(target)
 
-  # Calculate the `floor` of `date`.
-  date = new Date(date)
-  floor = DateRound.floor(date, unit)
+	return new Date()
 
-  # If the `floor` is equivalent to the `date`, return the `date`.
-  if date.getTime() == floor.getTime()
-    date
 
-  # Otherwise, add 1 `unit` and return that.
-  else
-    DateRound.add(floor, 1, unit)
+round = (date, target, precision)-> calc date, target, precision, 'round'
+floor = (date, target, precision)-> calc date, target, precision, 'floor'
+ceil = (date, target, precision)-> calc date, target, precision, 'ceil'
 
-# DateRound.round
-# --------------
-#
-# Returns `date` rounded for the given time `unit`.
-DateRound.round = (date, unit) ->
 
-  # Calculate `ceiling`, `floor`, and the distance between them and `date`.
-  date        = new Date(date)
-  ceiling     = DateRound.ceiling(date, unit)
-  floor       = DateRound.floor(date, unit)
-  ceilingDiff = ceiling.getTime() - date.getTime()
-  floorDiff   = date.getTime() - floor.getTime()
-  
-  # If the distance to the `ceiling` is greater than the distance to the `floor`, return the `floor`.
-  if ceilingDiff > floorDiff
-    floor
 
-  # Otherwise, return the `ceiling`.
-  else
-    ceiling
 
-# Time Methods
-# ------------
 
-# Create a time method generator that returns the UNIX time
-# instead of a `Date` object for a given function `f`.
-timeMethod = (f) ->
-  () -> f.apply(this, arguments).getTime()
 
-# For each method in `DateRound`, create a *Time method equivalent.
-for name, method of DateRound
-  DateRound["#{name}Time"] = timeMethod(method)
 
-# Exports
-# -------
 
-module.exports = DateRound
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+exports = module.exports = round
+exports.round = round
+exports.floor = floor
+exports.ceil = ceil
