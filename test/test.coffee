@@ -1,10 +1,11 @@
 dateround = require '../'
 assert = require('chai').assert
 timeunits = require 'timeunits'
+moment = require 'moment'
 base = null
-original = new Date 'Sat, 05 Mar 2011 12:13:23 GMT'
-diff = ('0'+(12 - original.getHours())).slice(-2)
-str = ()-> diff
+original = moment('2011-03-05 12:13:23').valueOf()
+# diff = ('0'+(12 - original.getHours())).slice(-2)
+# str = ()-> diff
 
 describe "dateround", ()->
 	beforeEach ()-> base = new Date original
@@ -23,27 +24,27 @@ describe "dateround", ()->
 	describe "floor", ()->
 		it "can floor to the nearest month", ()->
 			result = dateround.floor(base, 'month')
-			assert.equal result.toUTCString(), "Tue, 01 Mar 2011 00:00:00 GMT"
+			assert.equal result.valueOf(), moment('2011-03-01 00:00:00').valueOf()
 		
 		it "can floor to the nearest day", ()->
 			result = dateround.floor(base, 'day')
-			assert.equal result.toUTCString(), "Sat, 05 Mar 2011 00:00:00 GMT"
+			assert.equal result.valueOf(), moment('2011-03-05 00:00:00').valueOf()
 		
 		it "can floor to the nearest hour", ()->
 			result = dateround.floor(base, 'hour')
-			assert.equal result.toUTCString(), "Sat, 05 Mar 2011 12:00:00 GMT"
+			assert.equal result.valueOf(), moment('2011-03-05 12:00:00').valueOf()
 		
 		it "can floor to the nearest minute", ()->
 			result = dateround.floor(base, 'minute')
-			assert.equal result.toUTCString(), "Sat, 05 Mar 2011 12:13:00 GMT"
+			assert.equal result.valueOf(), moment('2011-03-05 12:13:00').valueOf()
 		
 		it "can floor to the nearest second", ()->
 			result = dateround.floor(base, 'second')
-			assert.equal result.toUTCString(), "Sat, 05 Mar 2011 12:13:23 GMT"
+			assert.equal result.valueOf(), moment('2011-03-05 12:13:23').valueOf()
 		
 		it "can floor to the nearest millisecond", ()->
 			result = dateround.floor(base, 'millisecond')
-			assert.equal result.toUTCString(), "Sat, 05 Mar 2011 12:13:23 GMT"
+			assert.equal result.valueOf(), moment('2011-03-05 12:13:23').valueOf()
 
 
 
