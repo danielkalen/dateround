@@ -55,6 +55,32 @@ describe "dateround", ()->
 			result = dateround.floor(base, 'millisecond')
 			assert.equal result.valueOf(), moment('2011-03-05 12:13:23').valueOf()
 
+	
+	describe "ceil", ()->
+		it "can ceil to the nearest month", ()->
+			result = dateround.ceil(base, 'month')
+			assert.equal result.valueOf(), moment('2011-04-01 00:00:00').valueOf()
+		
+		it "can ceil to the nearest day", ()->
+			result = dateround.ceil(base, 'day')
+			assert.equal result.valueOf(), moment('2011-03-06 00:00:00').valueOf()
+		
+		it "can ceil to the nearest hour", ()->
+			result = dateround.ceil(base, 'hour')
+			assert.equal result.valueOf(), moment('2011-03-05 13:00:00').valueOf()
+		
+		it "can ceil to the nearest minute", ()->
+			result = dateround.ceil(base, 'minute')
+			assert.equal result.valueOf(), moment('2011-03-05 12:14:00').valueOf()
+		
+		it "can ceil to the nearest second", ()->
+			result = dateround.ceil(base, 'second')
+			assert.equal result.valueOf(), moment('2011-03-05 12:13:23').valueOf()
+		
+		it "can ceil to the nearest millisecond", ()->
+			result = dateround.ceil(base, 'millisecond')
+			assert.equal result.valueOf(), moment('2011-03-05 12:13:23').valueOf()
+
 
 
 
