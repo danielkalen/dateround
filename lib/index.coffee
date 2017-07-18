@@ -22,8 +22,7 @@ calc = (date, target, precision=1, direction)->
 		else if rounded
 			subRatio *= MAX[index]
 			value += date["get#{key}"]() / subRatio
-			date["set#{key}"](0)
-
+			date["set#{key}"](if key is 'Date' then 1 else 0)
 
 	value = Math[direction](value / precision) * precision
 	value = Math.min(value, maxValue)

@@ -20,6 +20,15 @@ describe "dateround", ()->
 	it "rounds by default", ()->
 		assert.equal dateround(base.valueOf(), 'month').valueOf(), dateround.round(base.valueOf(), 'month').valueOf()
 
+	it "accepts strings", ()->
+		assert.equal dateround(base.valueOf(), 'hour').valueOf(), moment('2011-03-05 12:00:00').valueOf()
+
+	it "accepts strings", ()->
+		assert.equal dateround(base.toUTCString(), 'hour').valueOf(), moment('2011-03-05 12:00:00').valueOf()
+
+	it "accepts date objects", ()->
+		assert.equal dateround(base, 'hour').valueOf(), moment('2011-03-05 12:00:00').valueOf()
+
 	
 	describe "floor", ()->
 		it "can floor to the nearest month", ()->
